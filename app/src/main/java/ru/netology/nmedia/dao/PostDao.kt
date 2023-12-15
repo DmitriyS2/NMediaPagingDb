@@ -17,6 +17,9 @@ interface PostDao {
     @Query("SELECT * FROM PostEntity WHERE id >= (:id - :count)")
     suspend fun getLatest(id:Long, count: Int): List<Post>
 
+    @Query("SELECT * FROM PostEntity WHERE id < :id and id >= :id - :count ORDER BY id DESC")
+    suspend fun getBefore(id:Long, count: Int): List<Post>
+
     @Query("SELECT COUNT(*) == 0 FROM PostEntity")
     suspend fun isEmpty(): Boolean
 

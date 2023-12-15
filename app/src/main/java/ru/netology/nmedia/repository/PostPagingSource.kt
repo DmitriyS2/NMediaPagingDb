@@ -18,6 +18,11 @@ class PostPagingSource @Inject constructor(
 
     override suspend fun load(params: LoadParams<Long>): LoadResult<Long, Post> {
         try {
+            if (postDao.isEmpty()) return LoadResult.Page(
+                data = emptyList(),
+                prevKey = params.key,
+                nextKey = null
+            )
             val response = when (params) {
                 is LoadParams.Refresh -> postDao.getLatest(postDao.getMaxId(), params.loadSize)
            //     is LoadParams.Refresh -> service.getLatest(params.loadSize)
@@ -26,7 +31,8 @@ class PostPagingSource @Inject constructor(
                     prevKey = params.key,
                     nextKey = null
                 )
-                is LoadParams.Append -> postDao.getLatest(params.key, params.loadSize)
+                is LoadParams.Append ->  postDao.getBefore(params.key, params.loadSize)
+                 //   postDao.getLatest(params.key, params.loadSize)
              //   is LoadParams.Append -> service.getBefore(params.key, params.loadSize)
             }
 
